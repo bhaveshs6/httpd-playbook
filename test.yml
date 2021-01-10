@@ -1,0 +1,4 @@
+- hosts: mywebserver
+  tasks:
+          - debug:
+                  var: "groups.mywebserver[0]"

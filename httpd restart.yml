@@ -1,0 +1,40 @@
+#!/usr/local/bin/ansible-playbook
+- hosts: mywebserver
+  vars_prompt:
+  - name: document_root
+    prompt: Enter the location of document root
+    private: no
+  - name: port_no
+    prompt: Enter the port number to be used
+    private: no
+  - name: server_name
+    prompt: Enter the name of server
+    private: no
+  vars:
+  - ip: "{{ groups.mywebserver[0] }}"
+  tasks:
+  - name: Install web server
+    package:
+      name: httpd
+      state: present
+  - name: Set document root
+    template:
+      src: ./templates/hello.conf
+      dest: /etc/httpd/conf.d/
+  - name: Create document root
+    file:
+      path: "{{ document_root }}"
+      state: directory
+  - name: Copy file
+    template:
+      src: ./templates/index.html
+      dest: "{{ document_root }}/index.html"
+  - name: Start service
+    service:
+      name: httpd
+      state: started
+  handlers:
+  - name: Restart service
+    service:
+      name: httpd
+      state: restarted
